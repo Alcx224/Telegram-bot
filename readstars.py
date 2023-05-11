@@ -41,12 +41,11 @@ def read_coords(file):
             star_names = star_names.split(' ')  # Split 
             for name in star_names:
                 if name in name_dict:
-                    # Append the coordinates to the existing entry
-                    name_dict[name].append((hd_number, (x_coord, y_coord)))
+                    # Append the HD number to the existing entry
+                    name_dict[name].append(hd_number)
                 else:
-                    # Create a new entry with the star name and coordinates
-                    name_dict[name] = [(hd_number, (x_coord, y_coord))]
-
+                    # Create a new entry with the star name and HD number
+                    name_dict[name] = [hd_number]
     return hd_dict, magnitude_dict, name_dict
 
 with open("./constellations/stars.txt", "r") as file:
@@ -119,6 +118,7 @@ def plot_constellations(starsplot, hd_dict, lines_dict, name_dict):
                 x, y = hd_dict[hd_number]
 
                 for connected_star in star2:
+                    print(connected_star)
                     if connected_star in name_dict:
                         connected_hd_numbers = name_dict[connected_star]
                         if isinstance(connected_hd_numbers, list):
