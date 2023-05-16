@@ -81,23 +81,38 @@ def stars_plotting(picture, hd_dict, magnitude_dict):
 starsplot = stars_plotting(picture, hd_dict, magnitude_dict)
 
 
+
 def read_constellation_lines(file):
-    lines_dict = {}  # Dictionary keyed on star names with lines between stars
+    lines_dict = {}  # Dictionary keyed on HD numbers with lines between stars
 
     for line in file:
         star1, star2 = line.strip().split(',')
         star1 = star1.strip()
         star2 = star2.strip()
 
-        if star1 in lines_dict:
-            lines_dict[star1].append(star2)
-        else:
-            lines_dict[star1] = [star2]
+        if star1 in name_dict and star2 in name_dict:
+            hd_numbers1 = name_dict[star1]
+            hd_numbers2 = name_dict[star2]
 
-        if star2 in lines_dict:
-            lines_dict[star2].append(star1)
-        else:
-            lines_dict[star2] = [star1]
+            if isinstance(hd_numbers1, list):
+                hd_number1 = hd_numbers1[0]
+            else:
+                hd_number1 = hd_numbers1
+
+            if isinstance(hd_numbers2, list):
+                hd_number2 = hd_numbers2[0]
+            else:
+                hd_number2 = hd_numbers2
+
+            if hd_number1 in lines_dict:
+                lines_dict[hd_number1].append(hd_number2)
+            else:
+                lines_dict[hd_number1] = [hd_number2]
+
+            if hd_number2 in lines_dict:
+                lines_dict[hd_number2].append(hd_number1)
+            else:
+                lines_dict[hd_number2] = [hd_number1]
 
     return lines_dict
 
@@ -106,32 +121,32 @@ with open("./constellations/Boyero.txt", "r") as file:
 
 def plot_constellations(starsplot, hd_dict, lines_dict, name_dict):
     draw2 = ImageDraw.Draw(starsplot)
-    for star1, star2 in lines_dict.items():
+    for star1, star2_list in lines_dict.items():
         if star1 in name_dict:
-            hd_numbers = name_dict[star1]
-            if isinstance(hd_numbers, list):
-                hd_number = hd_numbers[0]
+            hd_numbers1 = name_dict[star1]
+            if isinstance(hd_numbers1, list):
+                hd_number1 = hd_numbers1[0]
             else:
-                hd_number = hd_numbers
+                hd_number1 = hd_numbers1
 
-            if hd_number in hd_dict:
-                x, y = hd_dict[hd_number]
+            if hd_number1 in hd_dict:
+                x1, y1 = hd_dict[hd_number1]
 
-                for connected_star in star2:
-                    print(connected_star)
-                    if connected_star in name_dict:
-                        connected_hd_numbers = name_dict[connected_star]
-                        if isinstance(connected_hd_numbers, list):
-                            connected_hd_number = connected_hd_numbers[0]
+                for star2 in star2_list:
+                    if star2 in name_dict:
+                        hd_numbers2 = name_dict[star2]
+                        if isinstance(hd_numbers2, list):
+                            hd_number2 = hd_numbers2[0]
                         else:
-                            connected_hd_number = connected_hd_numbers
+                            hd_number2 = hd_numbers2
 
-                        if connected_hd_number in hd_dict:
-                            x1, y1 = hd_dict[connected_hd_number]
+                        if hd_number2 in hd_dict:
+                            x2, y2 = hd_dict[hd_number2]
 
                             # Draw a line between the two stars
-                            draw2.line([x, y, x1, y1], fill='white')
+                            draw2.line([x1, y1, x2, y2], fill='white')
 
     return starsplot
-finalplot = plot_constellations(starsplot, hd_dict, lines_dict, name_dict)
-finalplot.show()
+
+constellation_plot = plot_constellations(starsplot, hd_dict, lines_dict, name_dict)
+constellation_plot.show()
