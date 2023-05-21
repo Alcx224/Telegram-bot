@@ -9,20 +9,53 @@ user={}
 
 @bot.message_handler(commands=["start"])
 def cmd_start(message):
-    bot.send_message(message.chat.id, "Hola, Bienvenido a nuestro bot \nUtiliza /help para ver los comandos que puedes utilizar")
+    bot.send_message(message.chat.id, "Hola, Bienvenido a nuestro bot \nUtiliza /help "
+                     "para ver los comandos que puedes utilizar.")
 
 @bot.message_handler(commands=["help"])
 def cmd_help(message):
-    bot.send_message(message.chat.id, "Usa el comando /constellation para iniciar el modo de observación estelar \nUsa el comando /recurrency para digitar una relación de recurrencia a resolver")
+    bot.send_message(message.chat.id, "Usa el comando: \n/constellation para iniciar "
+                     "el modo de observación estelar \nUsa el comando"
+                     " /recurrency para digitar una relación de recurrencia a resolver.")
+        
+    bot.send_message(message.chat.id, "Usa el comando:  \n/constellation <nombre de la constelación> "
+                      "para ver la constelación dibujada en nuestra carta estelar o usa solo /constellation para ver"
+                      " nuestro mapa sin ninguna constelación.")
+    bot.send_message(message.chat.id, "Las constelaciones disponibles son: \n"
+                     "Boyero, Casiopea, Cazo, Cygnet, Geminis, Hydra, OsaMayor y la OsaMenor. \n"
+                     "Sí quieres ver todas las constelaciones dibujadas utiliza el argumento all.")
 
 @bot.message_handler(commands=["constellation"])
 def cmd_constellation(message):
-    picture = plot_background()
+    command, *parameters = message.text.split(' ')
+
     with open("./constellations/stars.txt", "r") as file:
         hd_dict, magnitude_dict, name_dict = read_coords(file)
-    starsplot = stars_plotting(picture, hd_dict, magnitude_dict)
-    bot.send_message(message.chat.id, "Este es nuestro mapa estelar, échale un vistazo: ")
-    bot.send_photo(message.chat.id, starsplot)
+        
+    
+    if len(parameters) == 0:
+         stars_plot = stars_plotting(hd_dict, magnitude_dict)
+         bot.send_message(message.chat.id, "Este es nuestro mapa estelar, échale un vistazo: ")
+         bot.send_photo(message.chat.id, stars_plot)
+
+    elif parameters[0] == "all":
+        all_cons = read_all_constellation_lines("./constellations", "stars.txt")
+        cons_plot = plot_constellation_lines(stars_plotting(hd_dict, magnitude_dict), hd_dict, all_cons, name_dict, "white")
+        bot.send_message(message.chat.id, "Este es nuestro mapa estelar con todas nuestras constelaciones, " "échale un vistazo: ")
+        bot.send_photo(message.chat.id, cons_plot)
+
+    else:
+        constellation_name = parameters[0]
+        path = "./constellations/"+ constellation_name +".txt"
+        with open(path, "r") as file:
+            lines_dict = read_constellation_lines(file)
+            
+        cons_plot = plot_constellation_lines(stars_plotting(hd_dict, magnitude_dict), hd_dict, lines_dict, name_dict, "white")
+        bot.send_message(message.chat.id, "Este es nuestro mapa estelar con la constelación "+ constellation_name + " échale un vistazo: ")
+        bot.send_photo(message.chat.id, cons_plot)
+        lines_dict ={}
+        
+    
 
 @bot.message_handler(commands=["recurrency"])
 def g_n(message):
