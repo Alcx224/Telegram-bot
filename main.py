@@ -16,7 +16,7 @@ def cmd_start(message):
 def cmd_help(message):
     bot.send_message(message.chat.id, "Usa el comando: \n/constellation para iniciar "
                      "el modo de observación estelar \nUsa el comando"
-                     " /recurrency para digitar una relación de recurrencia a resolver.")
+                     " /rrnhccc para digitar una relación de recurrencia a resolver.")
         
     bot.send_message(message.chat.id, "Usa el comando:  \n/constellation <nombre de la constelación> "
                       "para ver la constelación dibujada en nuestra carta estelar o usa solo /constellation para ver"
@@ -57,7 +57,7 @@ def cmd_constellation(message):
         
     
 
-@bot.message_handler(commands=["recurrency"])
+@bot.message_handler(commands=["rrnhccc"])
 def g_n(message):
     markup=ForceReply()
     msg = bot.send_message(message.chat.id, "Ingresa tú g(n)", reply_markup=markup)
@@ -90,5 +90,14 @@ def lastdata(message):
 
 if __name__ == "__main__":
     print("Starting Bot")
+
+    bot.set_my_commands([
+        telebot.types.BotCommand("/start", "Inicia nuestro bot"),
+        telebot.types.BotCommand("/help", "Cómo usar nuestros comandos"),
+        telebot.types.BotCommand("/constellation", "Comando principal para nuestra carta estelar"),
+        telebot.types.BotCommand("/rrnhccc", "Relaciones de recurrencia"),
+    ])
+
+
     bot.infinity_polling()
 
